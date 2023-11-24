@@ -21,4 +21,17 @@ page = BeautifulSoup(request_text, "html.parser")
 #fichier.write(str(page))
 #fichier.close()
 tableau_general = page.find('table')
-print(tableau_general)
+#print(tableau_general)
+table_body = tableau_general.find('tbody')
+rows = table_body.find_all('tr')
+print(rows[5])
+# On crée un dictionnaire avec les infos
+"""
+dico_infos_generales = dict()
+for row in rows:
+    cols = row.find_all('td')
+    cols = [ele.text.strip() for ele in cols]
+    if len(cols) > 0 : 
+        dico_infos_generales[cols[0]] = cols[1:]
+print(dico_infos_generales)
+"""
