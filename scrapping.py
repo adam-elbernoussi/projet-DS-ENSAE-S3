@@ -53,11 +53,15 @@ def scrap_article_CF(link : str):
     return {"title": res_title, "date": str(res_date), "content": res_content}
 
 
-
+def scrapOnSite(ticker):
+    linkNews = f"https://www.abcbourse.com/marches/news_valeur/{ticker}"
+    page = requests.get(linkNews)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    print(soup.prettify())  
 
 
 
 # main
 if __name__ == "__main__": 
-    print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-et-sasol-signent-de-nouveaux-contrats-de-long-terme-pour-des-capacit_613211"))
-
+    print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
+    print(scrapOnSite("ALP"))
