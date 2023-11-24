@@ -14,7 +14,7 @@ ticker = "BNPP"
 name = "bnp-paribas"
 
 #Coding functions
-def scrap_article(link : str):
+def scrap_article_CF(link : str):
     """
     This function scraps an article from a given link.
 
@@ -59,5 +59,5 @@ def scrap_article(link : str):
 
 # main
 if __name__ == "__main__": 
-    print(scrap_article("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
+    print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-et-sasol-signent-de-nouveaux-contrats-de-long-terme-pour-des-capacit_613211"))
 
