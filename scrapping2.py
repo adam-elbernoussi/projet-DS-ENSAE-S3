@@ -24,7 +24,7 @@ tableau_general = page.find('table')
 #print(tableau_general)
 table_body = tableau_general.find('tbody')
 rows = table_body.find_all('tr')
-print(rows[5])
+#print(rows[5])
 # On crée un dictionnaire avec les infos
 """
 dico_infos_generales = dict()
@@ -35,3 +35,8 @@ for row in rows:
         dico_infos_generales[cols[0]] = cols[1:]
 print(dico_infos_generales)
 """
+
+liste_infos_generales = []
+for row in rows:
+    liste_infos_generales.append((row.find("th"), row.find("td")))
+print(liste_infos_generales)
