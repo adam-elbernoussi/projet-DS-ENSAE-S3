@@ -50,7 +50,6 @@ def scrap_article(link : str):
         res_content += sentence.string
     res_content = re.sub(r"\.(?=\D)", ". ", res_content)
     res_content = re.findall(r"- (.*) Copyright", res_content)[0]
-    print(res_date)
     return {"title": res_title, "date": str(res_date), "content": res_content}
 
 
