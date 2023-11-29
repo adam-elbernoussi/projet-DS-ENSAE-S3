@@ -9,7 +9,7 @@ import numpy as np
 import re
 import datetime
 import time
-
+import tqdm
 
 
 #Coding functions
@@ -48,7 +48,10 @@ def scrap_article_CF(link : str):
     for sentence in listSentence:
         res_content += sentence.string
     res_content = re.sub(r"\.(?=\D)", ". ", res_content)
-    res_content = re.findall(r"- (.*) Copyright", res_content)[0]
+    try:
+        res_content = re.findall(r"- (.*) Copyright", res_content)[0]
+    except:
+        return {"title": res_title, "date": str(res_date), "content": None}
     return {"title": res_title, "date": str(res_date), "content": res_content}
 
 
@@ -94,6 +97,19 @@ def scrap_article_gen(link : str):
 
 
 def scrapOnePage(link : str):
+    """
+    This function scraps all the articles of a page by applying scrap_article_CF to each of them.
+
+    Parameters
+    ----------
+    link : str
+        The link of the page.
+    
+    Returns
+    -------
+    dataset : list
+        The list of all the articles of the page.
+    """
     dataset = []
     page = requests.get(link)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -105,8 +121,31 @@ def scrapOnePage(link : str):
     return dataset
 
 
-# à recoder en plus propre 
-def scrapOnSite(link, limite : int = 3, iter : int = 0, res = []):
+# à recoder en plus propre (ou pas)
+def scrapOnSite(link, limite : int = 4, iter : int = 0, res = None):
+    """
+    This function scraps some articles of a site by looking into every page and applying scrapOnePage.
+    This function is recursive.
+    
+    Parameters
+    ----------
+    link : str
+        The link of the site.
+    limite : int
+        The maximum number of pages to scrap.
+    iter : int
+        The number of pages already scrapped.
+    res : list
+        The list of all the articles scrapped (the result).
+
+    Returns
+    -------
+    res : list
+        The list of all the articles scrapped. 
+        Each article is a dictionary with the keys "title", "date" and "content".
+    """
+    if res is None:
+        res = []
     iter +=1
     queue = []
     page = requests.get(link)
@@ -117,24 +156,19 @@ def scrapOnSite(link, limite : int = 3, iter : int = 0, res = []):
         queue.append(f"https://www.abcbourse.com{link.a.get('href')}")
     while queue and iter < limite:
         if len(queue) == 1:
-            print(len(queue))
+            print(len(queue)) #à supprimer
             scrapOnSite(queue[0], limite, iter, res)
-            res.append(scrapOnePage(queue.pop(0)))
+            res += scrapOnePage(queue.pop(0))
         else:
-            print(len(queue))
-            res.append(scrapOnePage(queue.pop(0)))
+            print(len(queue)) #à supprimer
+            res += scrapOnePage(queue.pop(0))
     return res
 
 
 
 # main
 if __name__ == "__main__": 
-    # print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
-    # file = open("file.txt", "w")
-    # file.write(str(scrapOnSite("ALP")))
-    # file.close()
+    print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
+    print(scrapOnePage("https://www.abcbourse.com/marches/news_valeur/AIp/10"))
     print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
-    #print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
-    # a = dict([['e', 5], ['r', 5]])
-    # b = dict([['e', 6], ['r', 6]])
-    # print(pd.DataFrame([a, b]))
+
