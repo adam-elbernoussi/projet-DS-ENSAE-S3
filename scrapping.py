@@ -104,9 +104,10 @@ def scrapOnePage(link : str):
             dataset.append(scrap_article_CF(f"""https://www.abcbourse.com{div_class.a.get("href")}"""))
     return dataset
 
-def scrapOnSite(link, limite : int = 3, iter : int = 0):
+
+# à recoder en plus propre 
+def scrapOnSite(link, limite : int = 3, iter : int = 0, res = []):
     iter +=1
-    res = []
     queue = []
     page = requests.get(link)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -116,17 +117,15 @@ def scrapOnSite(link, limite : int = 3, iter : int = 0):
         queue.append(f"https://www.abcbourse.com{link.a.get('href')}")
     while queue and iter < limite:
         if len(queue) == 1:
-            scrapOnSite(queue[0], limite, iter)
-            #res.append(scrapOnePage(queue.pop(0)))
-            queue.pop(0)
-            res.append(1)
+            print(len(queue))
+            scrapOnSite(queue[0], limite, iter, res)
+            res.append(scrapOnePage(queue.pop(0)))
         else:
-            #res.append(scrapOnePage(queue.pop(0)))
-            queue.pop(0)
-            res.append(1)
+            print(len(queue))
+            res.append(scrapOnePage(queue.pop(0)))
     return res
 
-    
+
 
 # main
 if __name__ == "__main__": 
