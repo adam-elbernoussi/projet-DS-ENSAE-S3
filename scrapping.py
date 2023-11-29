@@ -10,8 +10,7 @@ import re
 import datetime
 import time
 
-ticker = "BNPP"
-name = "bnp-paribas"
+
 
 #Coding functions
 def scrap_article_CF(link : str):
@@ -94,21 +93,40 @@ def scrap_article_gen(link : str):
 
 
 
-def scrapOnSiteCF(ticker):
+def scrapOnePage(link : str):
     dataset = []
-    linkNews = f"https://www.abcbourse.com/marches/news_valeur/{ticker}"
-    page = requests.get(linkNews)
+    page = requests.get(link)
     soup = BeautifulSoup(page.content, 'html.parser')
     listOfLink = soup.find("div", {"class":"newslft"})
     listOfLink = listOfLink.findAll("div")
     for div_class in listOfLink:
         if "(CF)" in div_class.contents[-1]:
-            #dataset.append(scrap_article_CF())
-            #print(str(div_class.a))
-            print(re.findall(r"""href='(\s*)'>""", str(div_class.a)))
-    return None
+            dataset.append(scrap_article_CF(f"""https://www.abcbourse.com{div_class.a.get("href")}"""))
+    return dataset
 
+def scrapOnSite(link, limite : int = 3, iter : int = 0):
+    iter +=1
+    res = []
+    queue = []
+    page = requests.get(link)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    listOfLink = soup.find("ul", {"class":"pagin"})
+    listOfLink = listOfLink.findAll("li")
+    for link in listOfLink:
+        queue.append(f"https://www.abcbourse.com{link.a.get('href')}")
+    while queue and iter < limite:
+        if len(queue) == 1:
+            scrapOnSite(queue[0], limite, iter)
+            #res.append(scrapOnePage(queue.pop(0)))
+            queue.pop(0)
+            res.append(1)
+        else:
+            #res.append(scrapOnePage(queue.pop(0)))
+            queue.pop(0)
+            res.append(1)
+    return res
 
+    
 
 # main
 if __name__ == "__main__": 
@@ -116,7 +134,8 @@ if __name__ == "__main__":
     # file = open("file.txt", "w")
     # file.write(str(scrapOnSite("ALP")))
     # file.close()
-    print(scrapOnSiteCF("AIP"))
+    print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
+    #print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
     # a = dict([['e', 5], ['r', 5]])
     # b = dict([['e', 6], ['r', 6]])
     # print(pd.DataFrame([a, b]))
