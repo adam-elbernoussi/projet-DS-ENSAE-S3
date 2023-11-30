@@ -49,8 +49,9 @@ def scrap_article_CF(link : str):
         res_content += sentence.string
     res_content = re.sub(r"\.(?=\D)", ". ", res_content)
     try:
-        res_content = re.findall(r"- (.*) Copyright", res_content)[0]
+        res_content = re.findall(r"- (.*) 'Copyright|Copyright", res_content)[0]
     except:
+        print(res_content) #à supprimer
         return {"title": res_title, "date": str(res_date), "content": None}
     return {"title": res_title, "date": str(res_date), "content": res_content}
 
@@ -162,7 +163,7 @@ def scrapOnSite(link, limite : int = 4, iter : int = 0, res = None):
         else:
             print(len(queue)) #à supprimer
             res += scrapOnePage(queue.pop(0))
-    return res
+    return None #res
 
 
 
@@ -172,3 +173,8 @@ if __name__ == "__main__":
     print(scrapOnePage("https://www.abcbourse.com/marches/news_valeur/AIp/10"))
     print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
 
+
+"""
+Ok le problem qu'on a la c'est que lorsque les articles sont trop anciens, ils ne sont pas dans une balise p mais directement dans la div
+il faut donc voir si on peut enlever la balise p dans la fonction scrap_article_CF
+"""
