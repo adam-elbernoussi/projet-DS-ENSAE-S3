@@ -1,5 +1,5 @@
 """In this file, we will scrap some articles about a company given its ticker."""
-"""Firstly, on the website Investing.com"""
+"""Firstly, on the website abcbourse.com"""
 
 #Importing libraries
 import requests
@@ -42,16 +42,16 @@ def scrap_article_CF(link : str):
     res_date = datetime.datetime.strptime(stringForHour, r"%d/%m/%y %H:%M")
     #for content
     article_body = soup.find("div", {"class": "txtbig content_news"})
-    article_body = article_body.p
+    if res_date <= datetime.datetime.strptime("12/08/2019", r"%d/%m/%Y"):
+        article_body = article_body.p
     listSentence = article_body.strings
     res_content = ""
     for sentence in listSentence:
         res_content += sentence.string
     res_content = re.sub(r"\.(?=\D)", ". ", res_content)
     try:
-        res_content = re.findall(r"- (.*) 'Copyright|Copyright", res_content)[0]
+        res_content = re.findall(r"- (.*) (?:Copyright|'Copyright)", res_content)[0]
     except:
-        print(res_content) #à supprimer
         return {"title": res_title, "date": str(res_date), "content": None}
     return {"title": res_title, "date": str(res_date), "content": res_content}
 
@@ -170,8 +170,9 @@ def scrapOnSite(link, limite : int = 4, iter : int = 0, res = None):
 # main
 if __name__ == "__main__": 
     print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
-    print(scrapOnePage("https://www.abcbourse.com/marches/news_valeur/AIp/10"))
-    print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
+    print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-va-decarboner-une-cimenterie-d-holcim_594182"))
+    #print(scrapOnePage("https://www.abcbourse.com/marches/news_valeur/AIp/10"))
+    #print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
 
 
 """
