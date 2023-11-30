@@ -19,6 +19,8 @@ class Test_scrap_article(unittest.TestCase):
     def test_scrap_article_CF_type(self):
         res = scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216")
         self.assertIsInstance(res["title"], str)
+        self.assertIsInstance(res["date"], str)
+        self.assertIsInstance(res["content"], str)
 
 if __name__ == "__main__":
     unittest.main()
