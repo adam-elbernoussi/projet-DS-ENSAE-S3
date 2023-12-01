@@ -48,9 +48,10 @@ def scrap_article_CF(link : str):
     res_content = ""
     for sentence in listSentence:
         res_content += sentence.string
-    res_content = re.sub(r"\.(?=\D)", ". ", res_content)
+    res_content = re.sub(r"\.(?=[a-zA-Z]|')", ". ", res_content)
     try:
         res_content = re.findall(r"- (.*) (?:Copyright|'Copyright)", res_content)[0]
+        res_content = res_content.replace("  ", " ")
     except:
         return {"title": res_title, "date": str(res_date), "content": None}
     return {"title": res_title, "date": str(res_date), "content": res_content}
@@ -163,7 +164,7 @@ def scrapOnSite(link, limite : int = 4, iter : int = 0, res = None):
         else:
             print(len(queue)) #à supprimer
             res += scrapOnePage(queue.pop(0))
-    return None #res
+    return res
 
 
 
@@ -172,5 +173,5 @@ if __name__ == "__main__":
     print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216"))
     print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-va-decarboner-une-cimenterie-d-holcim_594182"))
     print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-blackrock-detient-moins-d-actions_476418"))
-    #print(scrapOnePage("https://www.abcbourse.com/marches/news_valeur/AIp/10"))
-    #print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
+    print(scrapOnePage("https://www.abcbourse.com/marches/news_valeur/AIp/10"))
+    print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
