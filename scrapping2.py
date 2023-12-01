@@ -39,4 +39,8 @@ print(dico_infos_generales)
 liste_infos_generales = []
 for row in rows:
     liste_infos_generales.append((row.find("th"), row.find("td")))
-print(liste_infos_generales)
+
+dico = {}
+for row in rows:
+    dico[row.find("th")] = row.find("td")
+
