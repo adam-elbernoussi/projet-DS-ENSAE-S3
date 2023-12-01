@@ -158,11 +158,9 @@ def scrapOnSite(link, limite : int = 4, iter : int = 0, res = None):
         queue.append(f"https://www.abcbourse.com{link.a.get('href')}")
     while queue and iter < limite:
         if len(queue) == 1:
-            print(len(queue)) #à supprimer
             scrapOnSite(queue[0], limite, iter, res)
             res += scrapOnePage(queue.pop(0))
         else:
-            print(len(queue)) #à supprimer
             res += scrapOnePage(queue.pop(0))
     return res
 
