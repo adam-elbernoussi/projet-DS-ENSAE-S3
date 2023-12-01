@@ -1,7 +1,6 @@
 import sys
-
 import unittest
-sys.path.append("NLP/")
+
 
 from urllib import request
 
@@ -23,7 +22,7 @@ dumas = clean_text_(dumas)
 
 
 # test
-from cleaning_text import tokenization, remove_stop_words, stemming
+from NLP.cleaning_text import tokenization, remove_stop_words, stemming
 
 class Test_tokenization(unittest.TestCase):
     def test_tokenization_type(self):
