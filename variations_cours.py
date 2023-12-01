@@ -59,4 +59,3 @@ tableau_cours = pd.DataFrame.from_dict(dico_final)
 
 #On l'allège en ne conservant que les informations qui nous intéressent (étape pas obligatoire au demeurant)
 tableau_cours = tableau_cours.drop(columns=["Ouverture", "Plus Haut", "Plus Bas", "Volume", "Dernier"])
-
