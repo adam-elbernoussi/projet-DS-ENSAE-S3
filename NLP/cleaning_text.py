@@ -13,11 +13,12 @@ nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 #Coding functions
 def tokenization(text : str):
     words = nltk.word_tokenize(text, language='french')
-    print(words)
     words = [word for word in words if word.isalpha()]
     return words
 
@@ -47,3 +48,8 @@ if __name__ =="__main__":
     print(tokenList)
     print(tokenListNoStopWords)
     print(stemmedTokenList)
+
+    wordcloud = WordCloud().generate(" ".join(cleaningText(text)))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
