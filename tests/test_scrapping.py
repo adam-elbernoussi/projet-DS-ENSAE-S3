@@ -1,7 +1,7 @@
 import sys
 
 import unittest
-from scrapping import scrap_article_CF
+from Scrapping.scrapping import scrap_article_CF
 
 class Test_scrap_article_CF(unittest.TestCase):
     def test_scrap_article_CF_title(self):
