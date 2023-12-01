@@ -1,5 +1,5 @@
 import pandas as pd
-import Scrapping.scrapping as scrapping
+from Scrapping import scrapping
 from NLP import cleaning_text
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
