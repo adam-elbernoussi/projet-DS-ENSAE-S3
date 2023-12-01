@@ -3,7 +3,7 @@ import sys
 import unittest
 from scrapping import scrap_article_CF
 
-class Test_scrap_article(unittest.TestCase):
+class Test_scrap_article_CF(unittest.TestCase):
     def test_scrap_article_CF_title(self):
         res = scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-nouveaux-ppa-avec-sasol-en-afrique-du-sud_613216")
         self.assertEqual(res["title"], "Air Liquide: nouveaux PPA avec Sasol en Afrique du Sud")

@@ -174,9 +174,3 @@ if __name__ == "__main__":
     print(scrap_article_CF("https://www.abcbourse.com/marches/air-liquide-blackrock-detient-moins-d-actions_476418"))
     #print(scrapOnePage("https://www.abcbourse.com/marches/news_valeur/AIp/10"))
     #print(scrapOnSite("https://www.abcbourse.com/marches/news_valeur/AIp"))
-
-
-"""
-Ok le problem qu'on a la c'est que lorsque les articles sont trop anciens, ils ne sont pas dans une balise p mais directement dans la div
-il faut donc voir si on peut enlever la balise p dans la fonction scrap_article_CF
-"""
