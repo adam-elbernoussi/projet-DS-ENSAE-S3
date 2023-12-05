@@ -32,6 +32,7 @@ def stemming(words : list):
     wordsStemmed = [stemmer.stem(word) for word in words] 
     return wordsStemmed
 
+
 def cleaningText(text : str):
     tokenList = tokenization(text)
     tokenListNoStopWords = remove_stop_words(tokenList)
