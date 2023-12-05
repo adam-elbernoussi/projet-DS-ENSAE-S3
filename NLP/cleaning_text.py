@@ -37,7 +37,10 @@ def cleaningText(text : str):
     tokenList = tokenization(text)
     tokenListNoStopWords = remove_stop_words(tokenList)
     stemmedTokenList = stemming(tokenListNoStopWords)
-    return stemmedTokenList
+
+    SetOfUnusefulWords = set(["air", "liquid"])
+    
+    return [word for word in stemmedTokenList if word not in SetOfUnusefulWords]
 
 
 
@@ -46,9 +49,11 @@ if __name__ =="__main__":
     tokenList = tokenization(text)
     tokenListNoStopWords = remove_stop_words(tokenList)
     stemmedTokenList = stemming(tokenListNoStopWords)
+    cleantext = cleaningText(text)
     print(tokenList)
     print(tokenListNoStopWords)
     print(stemmedTokenList)
+    print(cleantext)
 
     wordcloud = WordCloud().generate(" ".join(cleaningText(text)))
     plt.imshow(wordcloud, interpolation='bilinear')
