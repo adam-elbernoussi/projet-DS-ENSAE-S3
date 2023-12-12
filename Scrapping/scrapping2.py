@@ -26,21 +26,18 @@ table_body = tableau_general.find('tbody')
 rows = table_body.find_all('tr')
 #print(rows[5])
 # On crée un dictionnaire avec les infos
-"""
-dico_infos_generales = dict()
-for row in rows:
-    cols = row.find_all('td')
-    cols = [ele.text.strip() for ele in cols]
-    if len(cols) > 0 : 
-        dico_infos_generales[cols[0]] = cols[1:]
-print(dico_infos_generales)
-"""
-
-liste_infos_generales = []
-for row in rows:
-    liste_infos_generales.append((row.find("th"), row.find("td")))
 
 dico = {}
+i = -1
 for row in rows:
-    dico[row.find("th")] = row.find("td")
+    try :
+        _key = row.find("th").contents[0].string
+        _key = re.findall("\S*", _key)[0]
+        print(_key)
+        dico[_key] = list(row.find("td").strings)
+    except AttributeError :
+        pass
 
+print("test : ", rows[4].find("th").contents[0].string)
+
+print(dico)
