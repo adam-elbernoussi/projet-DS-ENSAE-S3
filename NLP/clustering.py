@@ -4,24 +4,38 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import seaborn as sns 
 from sklearn.feature_extraction.text import CountVectorizer
-
-def vectorize(corpus):
-    vectorizer = CountVectorizer()
-    vectorizedCorpus = vectorizer.fit_transform(corpus)
-    return vectorizedCorpus
+from sklearn.pipeline import make_pipeline
+from sklearn.decomposition import PCA
 
 
-
-def clustering():
-    pass
+#usefull
+pipeline = make_pipeline(CountVectorizer(), KMeans(n_clusters=3, random_state=0, n_init="auto"))
 
 
 if __name__ == "__main__":
     df = pd.read_csv("data/AIP_cleanarticles.csv")
-    print(df.head())
-    corpus = ['This is the first document.', 'This document is the second document.', 'And this is the third one.', 'Is this the first document?']
-    vectorizedCorpus = vectorize(corpus)
-    print(vectorizedCorpus.toarray())
+    corpus = df['content']
+    vectorizer = CountVectorizer()
+    vectorizedCorpus = vectorizer.fit_transform(corpus)
+    df['content_vectorized'] = vectorizedCorpus.toarray().tolist()
+
+    X = np.array(df['content_vectorized'].tolist())
+    kmeans = KMeans(n_clusters=3, random_state=0, n_init="auto").fit(X)
+    df['label'] = kmeans.labels_
+
+    pca = PCA(n_components=2)
+    pca.fit(X)
+    df['PCA2D'] = pca.transform(X).tolist()
+
+    colors = ["navy", "turquoise", "darkorange"]
+    plt.figure()
+    for color, i in zip(colors, [0, 1, 2]):
+        plt.scatter(df[df['label'] == i]['PCA2D'].apply(lambda x: x[0]), df[df['label'] == i]['PCA2D'].apply(lambda x: x[1]), color=color,label=i)
+    plt.legend(loc='best', shadow=False, scatterpoints=1)
+    plt.title('KMeans clustering of the articles PCA')
+    #plt.savefig("output/PCA_clustering.png")
+    plt.show()

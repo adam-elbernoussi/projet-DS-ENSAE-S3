@@ -1,6 +1,7 @@
 import pandas as pd
 from Scrapping import scrapping
 from NLP import cleaning_text
+from NLP import clustering
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 

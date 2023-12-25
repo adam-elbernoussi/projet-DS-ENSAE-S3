@@ -2,14 +2,10 @@ import sys
 
 import unittest
 
-from NLP.clustering import clustering
+from NLP.clustering import pipeline
 
-class Test_clustering(unittest.TestCase):
-    def test_clustering(self):
-        self.assertEqual(True, True)
-
-class Test_vectorize(unittest.TestCase):
-    def test_vectorize(self):
+class Test_pipeline(unittest.TestCase):
+    def test_pipeline(self):
         self.assertEqual(True, True)
 
 if __name__ == "__main__":
