@@ -2,11 +2,11 @@ import sys
 import unittest
 
 
-from urllib import request
+import requests
 
 url = "https://www.gutenberg.org/files/17989/17989-0.txt"
-response = request.urlopen(url)
-raw = response.read().decode('utf8')
+response = requests.get(url)
+raw = response.text
 
 dumas = raw.split("*** START OF THE PROJECT GUTENBERG EBOOK LE COMTE DE MONTE-CRISTO, TOME I ***")[1].split("*** END OF THE PROJECT GUTENBERG EBOOK LE COMTE DE MONTE-CRISTO, TOME I ***")[0]
 
