@@ -16,16 +16,22 @@ url_airliquide = "https://fr.wikipedia.org/wiki/Air_liquide"
 request_text = request.urlopen(url_airliquide).read()
 type(request_text)
 page = BeautifulSoup(request_text, "html.parser")
-#print(str(page))
-#fichier = open("res.txt", "w")
-#fichier.write(str(page))
-#fichier.close()
+
+"""
+Afin de regarder l'ensemble du code html, on effectue le code suivant, qui le copie dans un nouveau fichier :
+print(str(page))
+fichier = open("res.txt", "w")
+fichier.write(str(page))
+fichier.close()
+"""
+# Ce code nous permet d'observer que pour récupérer le tableau qui nous intéresse, il faut recherche le mot 'table'
 tableau_general = page.find('table')
-#print(tableau_general)
+
 table_body = tableau_general.find('tbody')
+# On nomme row la liste des lignes (en html) du tableau
 rows = table_body.find_all('tr')
-#print(rows[5])
-# On crée un dictionnaire avec les infos
+
+# On crée un dictionnaire avec les infos, en les nettoyant afin qu'elles soient utilisables
 
 dico = {}
 i = -1
