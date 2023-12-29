@@ -1,6 +1,6 @@
 """In this file, we will implement the clustering algorithm. More precisely, we will implement a K-means method.
    The input of this algorithm is a list of vectors (the vectors are the word embeddings of the words in the corpus).
-   More precisely, the algorithm is a pipeline that transorms a list words (cleaned article) in vector by counting the words and then applying the K-means algorithm.
+   More precisely, the algorithm is a pipeline that transorms a list words (article cleaned by stemming) in vector by counting the words and then applying the K-means algorithm.
    The output is a list of clusters, where each cluster is a label/category
    
    For the vizualisation we add a PCA step.

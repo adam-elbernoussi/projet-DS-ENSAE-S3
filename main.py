@@ -1,7 +1,8 @@
 import pandas as pd
 from Scrapping import scrapping
 from NLP import cleaning_text
-from NLP import clustering
+from NLP import clustering_counting
+from NLP import clustering_LDA
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
@@ -54,7 +55,7 @@ if __name__ == '__main__':
     df['Adj variation'] = df['variation'] - beta*df['variation bench']
 
     # clustering
-    df['category'] = clustering.pipeline.fit_predict(df['content'])
+    df['category'] = clustering_counting.pipeline.fit_predict(df['content'])
 
     # Printing and plotting the results
     print('moyenne des var adj :', df['Adj variation'].mean()*100)
