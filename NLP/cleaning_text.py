@@ -18,22 +18,75 @@ import matplotlib.pyplot as plt
 
 #Coding functions
 def tokenization(text : str):
+    """
+    This function tokenizes a text in french. And only keeps the words.
+
+    Parameters
+    ----------
+    text : str
+        The text to tokenize.
+
+    Returns
+    -------
+    words : list
+        The list of words (token) of the text.
+    """
     words = nltk.word_tokenize(text, language='french')
     words = [word for word in words if word.isalpha()]
     return words
 
 def remove_stop_words(words : list):
+    """
+    This function removes the stop words from a list of words.
+    
+    Parameters
+    ----------
+    words : list
+        The list of words.
+        
+    Returns
+    -------
+    wordsNoStopWords : list
+        The list of words without stop words.
+    """
     stop_words = set(stopwords.words('french'))
     wordsNoStopWords = [word for word in words if word not in stop_words]
     return wordsNoStopWords
 
 def stemming(words : list):
+    """
+    This function stems a list of words.
+    
+    Parameters
+    ----------
+    words : list
+        The list of words.
+    
+    Returns
+    -------
+    wordsStemmed : list
+        The list of stemmed words.
+    """
     stemmer = SnowballStemmer("french")
     wordsStemmed = [stemmer.stem(word) for word in words] 
     return wordsStemmed
 
 
 def cleaningText(text : str):
+    """
+    This function cleans a text by applying the 3 previous functions (Tokenization, stop words removal, stemming). 
+    It also removes some words that are not useful for our analysis.
+    
+    Parameters
+    ----------
+    text : str
+        The text to clean.
+    
+    Returns
+    -------
+    list
+        The list of cleaned words.
+    """
     tokenList = tokenization(text)
     tokenListNoStopWords = remove_stop_words(tokenList)
     stemmedTokenList = stemming(tokenListNoStopWords)
@@ -55,6 +108,7 @@ if __name__ =="__main__":
     print(stemmedTokenList)
     print(cleantext)
 
+    #We add a nice wordcloud that allows us to see the most used/important words in the article
     wordcloud = WordCloud().generate(" ".join(cleaningText(text)))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
