@@ -2,7 +2,7 @@ import sys
 
 import unittest
 
-from NLP.clustering import pipeline
+from NLP.clustering_counting import pipeline
 
 class Test_pipeline(unittest.TestCase):
     def test_pipeline(self):
