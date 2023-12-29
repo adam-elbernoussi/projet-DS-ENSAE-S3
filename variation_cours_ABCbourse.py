@@ -1,5 +1,7 @@
 """Voici une fonction permettant de récupérer un tableau contenant les variations des cours d'une action donnée (ici 
 Air Liquide) à partir de la date souhaitée sur le site ABC Bourse"""
+import pandas as pd
+
 
 def variation_cours(date_dd_mm_yyyy):
 
@@ -13,7 +15,7 @@ def variation_cours(date_dd_mm_yyyy):
     import html
 
     #choix du driver, ici on se sert du driver propre au navigateur Chrome
-    driver = webdriver.Chrome("W:\Bureau\Projet Python 2A\projet-DS-ENSAE-S3\chromedriver.exe")
+    driver = webdriver.Chrome("chromedriver.exe")
 
     #on se rend sur le site d'ABC Bourse
     driver.get("https://www.abcbourse.com/download/valeur/AIp")
@@ -75,3 +77,5 @@ def variation_cours(date_dd_mm_yyyy):
     tableau_cours = tableau_cours.drop(columns=["Ouverture", "Plus Haut", "Plus Bas", "Volume", "Dernier"])
 
     return tableau_cours
+
+print(variation_cours(pd.to_datetime("2020-01-01", format='%Y-%m-%d')))

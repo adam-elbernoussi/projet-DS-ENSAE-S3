@@ -11,25 +11,31 @@ def variation_cours_yf(date_dd_mm_yyyy) :
     from selenium.webdriver.common.keys import Keys
     import bs4
     import pandas as pd
+    import time
     from urllib import request
     import lxml
     import html 
+    from selenium import webdriver
+    driver = webdriver.Chrome()
 
     #on définit le webdriver dont on se sert
-    driver = webdriver.Chrome("W:\Bureau\Projet Python 2A\projet-DS-ENSAE-S3\chromedriver.exe")
+    #driver = webdriver.Chrome("chromedriver.exe")
 
     #on ouvre la page souhaitée
     driver.get("https://finance.yahoo.com/quote/AI.PA/history?p=AI.PA") 
 
     #on localise la date à changer
-    changement_date = driver.find_element_by_name("startDate")
+    changement_date = driver.find_element("startDate")
+    time.sleep(2)
 
     #on rentre la date souhaitée
     changement_date.send_keys(date_dd_mm_yyyy)
 
+    time.sleep(2)
     #on affiche la page avec la nouvelle date
     changement_date.send_keys(Keys.RETURN)
 
+    time.sleep(2)
     #On récupère le code source de la page
     page_source = driver.page_source
 
@@ -88,3 +94,6 @@ def variation_cours_yf(date_dd_mm_yyyy) :
     tableau_cours = tableau_cours.drop(columns=["Open", "High", "Low", "Volume", "Close*", "Adj Close**", "Volume"])
 
     return tableau_cours
+
+#On teste la fonction
+print(variation_cours_yf("01/01/2020"))
