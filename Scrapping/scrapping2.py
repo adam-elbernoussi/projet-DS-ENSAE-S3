@@ -33,17 +33,18 @@ rows = table_body.find_all('tr')
 
 # On crée un dictionnaire avec les infos, en les nettoyant afin qu'elles soient utilisables
 
-dico = {}
+infos_generales = {}
 i = -1
 for row in rows:
     try :
         _key = row.find("th").contents[0].string
         _key = re.findall("\S*", _key)[0]
         print(_key)
-        dico[_key] = list(row.find("td").strings)
+        infos_generales[_key] = row.find("td").contents[0].string
+        #infos_generales[_key] = list(row.find("td").strings)
     except AttributeError :
         pass
 
-print("test : ", rows[4].find("th").contents[0].string)
+#print("test : ", rows[4].find("th").contents[0].string)
 
-print(dico)
+print(infos_generales)
