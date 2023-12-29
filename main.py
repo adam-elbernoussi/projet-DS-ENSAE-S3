@@ -26,6 +26,7 @@ if __name__ == '__main__':
     df = df.set_index('date')
     df.drop(columns=['title'], inplace=True)
 
+    # We will now compute the variation of the stock price
     df_var = pd.read_csv(f"data/AI.PA.csv", index_col=0)
     df_var = df_var.drop(columns = ['Open', 'High', 'Low', 'Adj Close', 'Volume'])
     df_var['variation'] = df_var['Close'].pct_change(fill_method=None)
@@ -33,6 +34,7 @@ if __name__ == '__main__':
     df_var.index = pd.to_datetime(df_var.index)
     df_var = df_var.drop(columns=['Close'])
 
+    # We will now compute the variation of the benchmark
     df_var_bench = pd.read_csv(f"data/^FCHI.csv", index_col=0)
     df_var_bench = df_var_bench.drop(columns = ['Open', 'High', 'Low', 'Adj Close', 'Volume'])
     df_var_bench['variation bench'] = df_var_bench['Close'].pct_change(fill_method=None)
