@@ -25,21 +25,30 @@ colors  = ["navy", "turquoise", "darkorange"]
 
 if __name__ == "__main__":
     df = pd.read_csv("data/AIP_cleanarticles.csv")
-    corpus = df['content']
 
     vectorizer = CountVectorizer()
-    vectorizedCorpus = vectorizer.fit_transform(corpus.apply(lambda s: ' '.join(s)))
-    print(vectorizedCorpus)
+    vectorizedCorpus = vectorizer.fit_transform(df['content'])
+    #print(vectorizedCorpus)
     
 
-    #number_topics = 5
-    # number_words = 10# Create and fit the LDA model
-    # lda = LatentDirichletAllocation(n_components=11, max_iter=5,
-    #                                 learning_method = 'online',
-    #                                 learning_offset = 50.,
-    #                                 random_state = 0,
-    #                                 n_jobs = 1)
-    # lda.fit(df['content_vectorized'])
+    number_topics = 5
+    number_words = 10# Create and fit the LDA model
+    lda = LatentDirichletAllocation(n_components=11, max_iter=5,
+                                    learning_method = 'online',
+                                    learning_offset = 50.,
+                                    random_state = 0,
+                                    n_jobs = 1)
+    lda.fit(vectorizedCorpus)
+
+    # Helper function
+    def print_topics(model, count_vectorizer, n_top_words):
+        words = count_vectorizer.get_feature_names_out()
+        for topic_idx, topic in enumerate(model.components_):
+            print("\nTopic #%d:" % topic_idx)
+            print(" ".join([words[i]
+                            for i in topic.argsort()[:-n_top_words - 1:-1]]))
+
+    print_topics(lda, vectorizer, number_words)
     #print(df)
 
     # X = np.array(df['content_vectorized'].tolist())
