@@ -24,7 +24,7 @@ from sklearn.model_selection import GridSearchCV
 
 #usefull
 pipeline_LDA = make_pipeline(CountVectorizer(), 
-                            LatentDirichletAllocation(n_components=32),
+                            LatentDirichletAllocation(n_components=32, random_state = 0),
                             KMeans(n_clusters=3, random_state=0, n_init="auto"))
 
 colors = ["navy", "turquoise", "darkorange"]
