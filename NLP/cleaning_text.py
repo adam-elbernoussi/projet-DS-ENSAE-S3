@@ -9,8 +9,8 @@ In order to clean the text we will proceed in 3 steps :
 
 #Importing libraries
 import nltk
-nltk.download('punkt')
-nltk.download('stopwords')
+#nltk.download('punkt')
+#nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
 from wordcloud import WordCloud

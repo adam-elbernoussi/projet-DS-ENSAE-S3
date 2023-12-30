@@ -1,3 +1,18 @@
+"""This file is the main file of the project."""
+
+"""
+It is structured as follows :
+    - First, we scrap the articles from the website abcbourse.com
+    - Then we clean the text of the articles (tokenization, stop words removal, stemming/lemmatization)
+    - Then we compute the variation of the stock price
+    - Then we compute the variation of the benchmark
+    - Then we compute the adjusted variation following the well known formula : var = alpha + beta*var_bench (adj_var is the residual thus the alpha)
+    - Then we cluster the articles using K-means algorithm
+    - Then we plot the distribution of the variations by cluster
+The output of this file is the plot of the distribution of the variations by cluster
+It also allows a comparison between the results of the clustering with and without LDA (Latent Dirichlet Allocation)
+"""
+
 import pandas as pd
 from Scrapping import scrapping
 from NLP import cleaning_text
@@ -5,18 +20,22 @@ from NLP import clustering_counting
 from NLP import clustering_LDA
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
+import itertools
 
 ticker = "AIP"
 link = f"https://www.abcbourse.com/marches/news_valeur/{ticker}"
 
 if __name__ == '__main__':
-    # First, constructon of the DataBase of articles
+    # First, construction of the DataBase of articles
+    # Have a look at the module scrapping.py to see some examples of articles scrapped and how the algorithm seeks for the articles on the website
     #scrappingResult = scrapping.scrapOnSite(link) à remettre
     #df = pd.DataFrame(scrappingResult)
     #df.to_csv(f"data/{ticker}_articles.csv")
 
-    #Then preprocessing the text
+    # Then preprocessing the text
     #df = df.dropna()
+    # Have a look at the module cleaning_text.py to see how the text is cleaned step by step
+    # We also add a nice wordcloud visualization of an article as an example
     #df["content"] = df["content"].apply(cleaning_text.cleaningText)
     #print(df)
     #df.to_csv(f"data/{ticker}_cleanarticles.csv")
@@ -55,22 +74,70 @@ if __name__ == '__main__':
     df['Adj variation'] = df['variation'] - beta*df['variation bench']
 
     # clustering
-    df['category'] = clustering_counting.pipeline.fit_predict(df['content'])
+    # Have a look at the module clustering_counting.py to see how the clustering is done in the case of a simple counting vectorization
+    # We also add in this module a PCA step to vizualize the results of the clustering
+    # you can run the module directly to see it !
+    df['category no LDA'] = clustering_counting.pipeline.fit_predict(df['content'])
+    # Have a look at the module clustering_LDA.py to see how the clustering is done in the case of a LDA vectorization
+    # In this module too, we add a PCA 2D vizualization of the results
+    # we also add a gridsearch cross validation to find the best number of topics in the LDA
+    # we define the best number of topics as the number of topics that maximizes the difference between the means of the variations of the clusters in order to wide the clusters
+    # We definitely encourage you to run this module to see the results !
+    df['category LDA'] = clustering_LDA.pipeline_LDA.fit_predict(df['content'])
 
     # Printing and plotting the results
     print('moyenne des var adj :', df['Adj variation'].mean()*100)
-    print('Moyenne des variations par cluster :', df.groupby('category')['Adj variation'].mean()*100) #first encouraging result
+    print('Moyenne des variations par cluster :', df.groupby('category no LDA')['Adj variation'].mean()*100) #first encouraging result
 
-    fig, list_of_fig = plt.subplots(nrows=3, sharex=True, figsize=(7, 7))
+
+    """
+    First encouraging result here :
+    We can see in the means that we have the expected tilt of the variations.
+    While the mean of the variations of the cluster 0 is almost 0% which corresponds to a neutral article category
+    The mean of the variations of the cluster 1 is positive : 0.42% which almost twice the mean of the daily variation of the stock
+    And the mean of the variations of the cluster 2 is negative : -0.12%
+    
+    But when we plot the distribution of the variations by cluster, we can see that there are lots of mistakes in the classification.
+    Thus the results are not satisfying.
+    
+    An idea here is to change the vectorization method. 
+    We will try to add an LDA step before the K-means algorithm and plot the comparison.
+    """
+
+
+    fig, list_of_fig = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(7, 7))
     fig.suptitle("Distribution of the variations by cluster \n The mean of adjusted variations is : " + str(round(df['Adj variation'].mean()*100, 2)) + "%")
 
-    for i in range(3):
-        list_of_fig[i].hist(df[df['category']==i]['Adj variation']*100, bins=50)
-        mean = round(df[df['category']==i]['Adj variation'].mean()*100, 2)
-        list_of_fig[i].set_title('Cluster ' + str(i) + ' : ' + str(mean) + "%")
-        list_of_fig[i].set_ylabel('Frequency')
-        list_of_fig[i].axvline(x=mean, color='red', label = 'Mean : ' + str(mean) + "%")
-        list_of_fig[i].legend()
+    type_vectorization = ["no LDA", "LDA"]
+    color = ["steelblue", "darkorange"]
+
+    for i, j in itertools.product(range(3), range(2)):
+        list_of_fig[i, j].hist(df[df['category '+type_vectorization[j]]==i]['Adj variation']*100, bins=50, color=color[j])
+        mean = round(df[df['category '+type_vectorization[j]]==i]['Adj variation'].mean()*100, 2)
+        list_of_fig[i, j].set_title('Cluster '+ type_vectorization[j]+ " " + str(i) + ' : ' + str(mean) + "%")
+        list_of_fig[i, j].set_ylabel('Frequency')
+        list_of_fig[i, j].axvline(x=mean, color='red', label = 'Mean : ' + str(mean) + "%")
+        list_of_fig[i, j].legend()
     
-    list_of_fig[2].set_xlabel('Variation (%)')
+    list_of_fig[2, 0].set_xlabel('Variation (%)')
+    list_of_fig[2, 1].set_xlabel('Variation (%)')
     plt.show()
+
+    """
+    Now we can compare the two methods.
+    As we can see and as we expected, the results are better with the LDA vectorization.
+    More precisely, the tilt observed in the means of the variations is more pronounced. And errors are less likely to occur.
+
+    Nevertheless, the classification is still not highly satisfying.
+    As two categories seem to be pretty good, they contains only few datas and a third category seem to be a catch-all category.
+
+    This can be explained by several reasons :
+    - First, the number of articles may not be enough to have a good classification
+    - Second, the link between the only news of the day and the variation of the stock price may not be as strong as assumed
+    - Third, the vectorization method may not be the best one to discriminate the articles
+
+    Thus an area of improvement would be to find a better way to vectorize the text in order to better discriminate the articles of this category.
+    Also we could think about a reverse process : 
+    As we have the articles vectorized and the variations of the stock price that could act as a label (if we arbitraty define categories) we could train a classifier to predict the category of the variation of the stock price.
+    Another idea but probably less realistic is to use the variations of the stock price as a target and simply train a regressor to predict the variations of the stock price given a vectorized article.
+    """
