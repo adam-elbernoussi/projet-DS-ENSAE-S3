@@ -74,9 +74,11 @@ if __name__ == '__main__':
     df['Adj variation'] = df['variation'] - beta*df['variation bench']
 
     # clustering
-    # Have a look at the module clustering_counting.py to see how the clustering is done in the case of a simple counting vectorization
-    # We also add in this module a PCA step to vizualize the results of the clustering
-    # you can run the module directly to see it !
+    """
+    Have a look at the module clustering_counting.py to see how the clustering is done in the case of a simple counting vectorization
+    In this module we also add a PCA step to vizualize the results of the clustering
+    you can run the module directly to see it !
+    """
     df['category no LDA'] = clustering_counting.pipeline.fit_predict(df['content'])
     # Have a look at the module clustering_LDA.py to see how the clustering is done in the case of a LDA vectorization
     # In this module too, we add a PCA 2D vizualization of the results
