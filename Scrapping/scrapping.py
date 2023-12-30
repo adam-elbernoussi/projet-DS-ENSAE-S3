@@ -83,7 +83,7 @@ def scrapOnePage(link : str):
 
 
 # à recoder en plus propre (ou pas)
-def scrapOnSite(link, limite : int = 4, iter : int = 0, res = None):
+def scrapOnSite(link, limite : int = 5, iter : int = 0, res = None):
     """
     This function scraps some articles of a site by looking into every page and applying scrapOnePage.
     This function is recursive.
