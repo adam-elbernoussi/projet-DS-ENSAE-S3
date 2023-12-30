@@ -11,27 +11,26 @@ import datetime
 import time
 from urllib import request
 
-
+# We make a request on the Wikipedia page of the company.
 url_airliquide = "https://fr.wikipedia.org/wiki/Air_liquide"
 request_text = request.urlopen(url_airliquide).read()
-type(request_text)
 page = BeautifulSoup(request_text, "html.parser")
 
 """
-Afin de regarder l'ensemble du code html, on effectue le code suivant, qui le copie dans un nouveau fichier :
+To view the entire HTML code, we execute the following code, which copies it into a new file :
 print(str(page))
 fichier = open("res.txt", "w")
 fichier.write(str(page))
 fichier.close()
 """
-# Ce code nous permet d'observer que pour récupérer le tableau qui nous intéresse, il faut recherche le mot 'table'
+# This code allows us to observe that to retrieve the table of interest, we need to search for the word 'table'
 tableau_general = page.find('table')
 
 table_body = tableau_general.find('tbody')
-# On nomme row la liste des lignes (en html) du tableau
+# We name 'row' the list of rows (in HTML) of the table :
 rows = table_body.find_all('tr')
 
-# On crée un dictionnaire avec les infos, en les nettoyant afin qu'elles soient utilisables
+# We create a dictionary with the information, cleaning them up (for example, removing the \n) so that they are usable
 
 infos_generales = {}
 i = -1
@@ -39,12 +38,9 @@ for row in rows:
     try :
         _key = row.find("th").contents[0].string
         _key = re.findall("\S*", _key)[0]
-        print(_key)
-        infos_generales[_key] = row.find("td").contents[0].string
-        #infos_generales[_key] = list(row.find("td").strings)
+        infos_generales[_key] = (row.find("td").contents[0].string).strip('\n')
+        
     except AttributeError :
         pass
-
-#print("test : ", rows[4].find("th").contents[0].string)
 
 print(infos_generales)
