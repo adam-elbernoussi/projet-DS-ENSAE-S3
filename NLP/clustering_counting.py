@@ -24,7 +24,7 @@ colors  = ["navy", "turquoise", "darkorange"]
 
 if __name__ == "__main__":
     df = pd.read_csv("data/AIP_cleanarticles.csv")
-    corpus = df['content']
+    corpus = df['cleaned_article_stemming']
     vectorizer = CountVectorizer()
     vectorizedCorpus = vectorizer.fit_transform(corpus)
     df['content_vectorized'] = vectorizedCorpus.toarray().tolist()
@@ -42,5 +42,5 @@ if __name__ == "__main__":
         plt.scatter(df[df['label'] == i]['PCA2D'].apply(lambda x: x[0]), df[df['label'] == i]['PCA2D'].apply(lambda x: x[1]), color=color,label=i)
     plt.legend(loc='best', shadow=False, scatterpoints=1)
     plt.title('KMeans clustering of the articles PCA')
-    #plt.savefig("output/PCA_clustering.png")
+    #plt.savefig("output/PCA_clustering.png") 
     plt.show()

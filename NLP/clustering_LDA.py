@@ -34,7 +34,7 @@ if __name__ == "__main__":
     df = pd.read_csv("data/AIP_cleanarticles.csv", index_col=0)
 
     vectorizer = CountVectorizer()
-    vectorizedCorpus = vectorizer.fit_transform(df['content'])
+    vectorizedCorpus = vectorizer.fit_transform(df['cleaned_article_lemmatization'])
 
     number_topics = 30
     lda = LatentDirichletAllocation(n_components=number_topics, max_iter=5,

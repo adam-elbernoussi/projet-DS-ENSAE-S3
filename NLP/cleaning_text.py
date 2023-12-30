@@ -147,14 +147,15 @@ if __name__ =="__main__":
     tokenListNoStopWords = remove_stop_words(tokenList)
     stemmedTokenList = stemming(tokenListNoStopWords)
     cleantext = cleaningText(text)
+    cleantextLDA = cleaningTextLDA(text)
     print(tokenList)
     print(tokenListNoStopWords)
     print(stemmedTokenList)
     print(cleantext)
-    print(cleaningTextLDA(text))
+    print(cleantextLDA)
 
     #We add a nice wordcloud that allows us to see the most used/important words in the article
-    wordcloud = WordCloud().generate(" ".join(cleaningText(text)))
+    wordcloud = WordCloud().generate(" ".join(cleantext))
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
     plt.show()

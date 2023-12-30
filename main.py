@@ -4,10 +4,14 @@
 It is structured as follows :
     - First, we scrap the articles from the website abcbourse.com
     - Then we clean the text of the articles (tokenization, stop words removal, stemming/lemmatization)
+
     - Then we compute the variation of the stock price
     - Then we compute the variation of the benchmark
     - Then we compute the adjusted variation following the well known formula : var = alpha + beta*var_bench (adj_var is the residual thus the alpha)
-    - Then we cluster the articles using K-means algorithm
+
+    - Then we vectorize the cleaned text of the articles
+    - Then we cluster the articles using K-means algorithm (those two last steps are done together with a pipeline)
+
     - Then we plot the distribution of the variations by cluster
 The output of this file is the plot of the distribution of the variations by cluster
 It also allows a comparison between the results of the clustering with and without LDA (Latent Dirichlet Allocation)
@@ -27,26 +31,35 @@ link = f"https://www.abcbourse.com/marches/news_valeur/{ticker}"
 
 if __name__ == '__main__':
     # First, construction of the DataBase of articles
-    # Have a look at the module scrapping.py to see some examples of articles scrapped and how the algorithm seeks for the articles on the website
-    #scrappingResult = scrapping.scrapOnSite(link) à remettre
-    #df = pd.DataFrame(scrappingResult)
-    #df.to_csv(f"data/{ticker}_articles.csv")
+    """
+    Have a look at the module scrapping.py to see some examples of articles scrapped and how the algorithm seeks for the articles on the website
+    """
+    scrappingResult = scrapping.scrapOnSite(link) #à remettre
+    df = pd.DataFrame(scrappingResult)
+    df = df[df['date'] <= '2023-12-19'] # line added just to ensure the reproducibility
+    df.to_csv(f"data/{ticker}_articles.csv") # this line has been run one time
 
-    # Then preprocessing the text
-    #df = df.dropna()
-    # Have a look at the module cleaning_text.py to see how the text is cleaned step by step
-    # We also add a nice wordcloud visualization of an article as an example
-    #df["content"] = df["content"].apply(cleaning_text.cleaningText)
-    #print(df)
-    #df.to_csv(f"data/{ticker}_cleanarticles.csv")
+    # Then cleaning the text
+    # df = pd.read_csv(f"data/{ticker}_articles.csv", index_col=0) #emergency line
+    df = df.dropna() # just in case
+    """
+    Have a look at the module cleaning_text.py to see how the text is cleaned step by step
+    We also add (in this module) a nice wordcloud visualization of an article as an example
+    """
+    df["cleaned_article_stemming"] = df["content"].apply(cleaning_text.cleaningText)
+    df["cleaned_article_lemmatization"] = df["content"].apply(cleaning_text.cleaningTextLDA)
+    df.to_csv(f"data/{ticker}_cleanarticles.csv") # this line has been run one time
 
-    df = pd.read_csv(f"data/{ticker}_cleanarticles.csv", index_col=0)
+    # df = pd.read_csv(f"data/{ticker}_cleanarticles.csv", index_col=0) #emergency line
     df['date'] = df['date'].apply(lambda x: x.split(" ")[0])
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
     df = df.set_index('date')
     df.drop(columns=['title'], inplace=True)
 
     # We will now compute the variation of the stock price
+    """
+    The data of the stock price were downloaded directly from Yahoo Finance as we have arlready scrapped the articles
+    """
     df_var = pd.read_csv(f"data/AI.PA.csv", index_col=0)
     df_var = df_var.drop(columns = ['Open', 'High', 'Low', 'Adj Close', 'Volume'])
     df_var['variation'] = df_var['Close'].pct_change(fill_method=None)
@@ -55,6 +68,9 @@ if __name__ == '__main__':
     df_var = df_var.drop(columns=['Close'])
 
     # We will now compute the variation of the benchmark
+    """
+    The data of the benchmark price were downloaded directly from Yahoo Finance too
+    """
     df_var_bench = pd.read_csv(f"data/^FCHI.csv", index_col=0)
     df_var_bench = df_var_bench.drop(columns = ['Open', 'High', 'Low', 'Adj Close', 'Volume'])
     df_var_bench['variation bench'] = df_var_bench['Close'].pct_change(fill_method=None)
@@ -73,30 +89,37 @@ if __name__ == '__main__':
 
     df['Adj variation'] = df['variation'] - beta*df['variation bench']
 
+
     # clustering
     """
     Have a look at the module clustering_counting.py to see how the clustering is done in the case of a simple counting vectorization
     In this module we also add a PCA step to vizualize the results of the clustering
     you can run the module directly to see it !
     """
-    df['category no LDA'] = clustering_counting.pipeline.fit_predict(df['content'])
-    # Have a look at the module clustering_LDA.py to see how the clustering is done in the case of a LDA vectorization
-    # In this module too, we add a PCA 2D vizualization of the results
-    # we also add a gridsearch cross validation to find the best number of topics in the LDA
-    # we define the best number of topics as the number of topics that maximizes the difference between the means of the variations of the clusters in order to wide the clusters
-    # We definitely encourage you to run this module to see the results !
-    df['category LDA'] = clustering_LDA.pipeline_LDA.fit_predict(df['content'])
+    df['category no LDA'] = clustering_counting.pipeline.fit_predict(df['cleaned_article_stemming'])
+
+    """
+    Have a look at the module clustering_LDA.py to see how the clustering is done in the case of a LDA vectorization
+    In this module too, we add a PCA 2D vizualization of the results
+    we also add a gridsearch cross validation to find the best number of topics in the LDA
+    we define the best number of topics as the number of topics that maximizes the difference between the means of the variations of the clusters in order to wide the clusters
+
+    An area of improvement if we had more time would be to extend the gridsearch CV to other hyper-parameters of the model and to experiment several score functions
+
+    We definitely encourage you to run this module to see the results !
+    """
+    df['category LDA'] = clustering_LDA.pipeline_LDA.fit_predict(df['cleaned_article_lemmatization'])
+
 
     # Printing and plotting the results
     print('moyenne des var adj :', df['Adj variation'].mean()*100)
     print('Moyenne des variations par cluster :', df.groupby('category no LDA')['Adj variation'].mean()*100) #first encouraging result
 
-
     """
     First encouraging result here :
     We can see in the means that we have the expected tilt of the variations.
     While the mean of the variations of the cluster 0 is almost 0% which corresponds to a neutral article category
-    The mean of the variations of the cluster 1 is positive : 0.42% which almost twice the mean of the daily variation of the stock
+    The mean of the variations of the cluster 1 is positive : 0.42% which is almost twice the mean of the daily variation of the stock
     And the mean of the variations of the cluster 2 is negative : -0.12%
     
     But when we plot the distribution of the variations by cluster, we can see that there are lots of mistakes in the classification.
@@ -105,7 +128,6 @@ if __name__ == '__main__':
     An idea here is to change the vectorization method. 
     We will try to add an LDA step before the K-means algorithm and plot the comparison.
     """
-
 
     fig, list_of_fig = plt.subplots(nrows=3, ncols=2, sharex=True, figsize=(7, 7))
     fig.suptitle("Distribution of the variations by cluster \n The mean of adjusted variations is : " + str(round(df['Adj variation'].mean()*100, 2)) + "%")
@@ -138,8 +160,10 @@ if __name__ == '__main__':
     - Second, the link between the only news of the day and the variation of the stock price may not be as strong as assumed
     - Third, the vectorization method may not be the best one to discriminate the articles
 
-    Thus an area of improvement would be to find a better way to vectorize the text in order to better discriminate the articles of this category.
+    Thus an area of improvement would be to find a better way to vectorize the text in order to better discriminate the articles.
     Also we could think about a reverse process : 
-    As we have the articles vectorized and the variations of the stock price that could act as a label (if we arbitraty define categories) we could train a classifier to predict the category of the variation of the stock price.
+    As we have the articles vectorized and the variations of the stock price that could act as a label (if we arbitraty define categories) we could train a classifier (such as a support vector machine classifier) to predict the category of the variation of the stock price.
     Another idea but probably less realistic is to use the variations of the stock price as a target and simply train a regressor to predict the variations of the stock price given a vectorized article.
+
+    We would have tried this if we have had more time : work to do !
     """
