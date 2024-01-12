@@ -24,7 +24,7 @@ from sklearn.model_selection import GridSearchCV
 
 #usefull
 pipeline_LDA = make_pipeline(CountVectorizer(), 
-                            LatentDirichletAllocation(n_components=32, random_state = 0),
+                            LatentDirichletAllocation(n_components=47, random_state = 0),
                             KMeans(n_clusters=3, random_state=0, n_init="auto"))
 
 colors = ["navy", "turquoise", "darkorange"]
@@ -128,7 +128,7 @@ if __name__ == "__main__":
         return np.sum(np.array([means[0]-means[1], means[0]-means[2], means[1]-means[2]])**2)
 
     #Now the grid search
-    params = {'latentdirichletallocation__n_components': list(range(5, 70))}
+    params = {'latentdirichletallocation__n_components': list(range(5, 70, 50))}
 
     grid = GridSearchCV(pipeline_LDA, 
                         param_grid = params, 

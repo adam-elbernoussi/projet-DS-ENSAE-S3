@@ -156,7 +156,7 @@ if __name__ == '__main__':
     
     list_of_fig[2, 0].set_xlabel('Variation (%)')
     list_of_fig[2, 1].set_xlabel('Variation (%)')
-    plt.savefig("main_output.jpg")
+    plt.savefig("main_output_3.jpg")
     plt.show()
 
     """
